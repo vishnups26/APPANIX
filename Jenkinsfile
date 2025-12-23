@@ -281,25 +281,25 @@ pipeline {
       }
     }
 
-    stage('Build Frontend') {
-      steps {
-        echo '========== Building Angular Frontend =========='
-        sh '''
-          cd inventory_management_frontend-main
+    // stage('Build Frontend') {
+    //   steps {
+    //     echo '========== Building Angular Frontend =========='
+    //     sh '''
+    //       cd inventory_management_frontend-main
           
-          echo "Running npm install and build..."
-          docker run --rm \
-            -v "$PWD":/app \
-            -w /app \
-            node:22-alpine \
-            sh -c "npm install && npm run build --configuration production || npm run build"
+    //       echo "Running npm install and build..."
+    //       docker run --rm \
+    //         -v "$PWD":/app \
+    //         -w /app \
+    //         node:22-alpine \
+    //         sh -c "npm install && npm run build --configuration production || npm run build"
           
-          echo "✓ Frontend build completed"
-          echo "Build output location: dist/"
-          ls -lah dist/ | head -5 || echo "Note: dist directory structure varies by Angular config"
-        '''
-      }
-    }
+    //       echo "✓ Frontend build completed"
+    //       echo "Build output location: dist/"
+    //       ls -lah dist/ | head -5 || echo "Note: dist directory structure varies by Angular config"
+    //     '''
+    //   }
+    // }
 
     stage('Build Docker Images') {
       steps {
