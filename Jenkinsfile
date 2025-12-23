@@ -291,7 +291,7 @@ pipeline {
           docker run --rm \
             -v "$PWD":/app \
             -w /app \
-            node:18-alpine \
+            node:22-alpine \
             sh -c "npm install && npm run build -configuration production || npm run build"
           
           echo "✓ Frontend build completed"
