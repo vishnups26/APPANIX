@@ -336,8 +336,8 @@ pipeline {
           } else {
             echo "Pushing images to Docker registry..."
             
-            FRONT_TAG = "${env.REGISTRY_PREFIX}/${params.FRONTEND_IMAGE}:${env.BUILD_TAG}"
-            BACK_TAG = "${env.REGISTRY_PREFIX}/${params.BACKEND_IMAGE}:${env.BUILD_TAG}"
+            def FRONT_TAG = "${env.REGISTRY_PREFIX}/${params.FRONTEND_IMAGE}:${env.BUILD_TAG}"
+            def BACK_TAG = "${env.REGISTRY_PREFIX}/${params.BACKEND_IMAGE}:${env.BUILD_TAG}"
             
             sh '''
               echo "Pushing frontend image: ${FRONT_TAG}"
