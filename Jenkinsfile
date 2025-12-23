@@ -286,14 +286,13 @@ pipeline {
         echo '========== Building Angular Frontend =========='
         sh '''
           cd inventory_management_frontend-main
-          pwd
           
           echo "Running npm install and build..."
           docker run --rm \
             -v "$PWD":/app \
             -w /app \
-            node:22-alpine \
-            sh -c "npm install && npm run build -- --configuration production || npm run build"
+            node:18-alpine \
+            sh -c "npm install && npm run build -configuration production || npm run build"
           
           echo "✓ Frontend build completed"
           echo "Build output location: dist/"
