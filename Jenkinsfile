@@ -221,7 +221,7 @@ pipeline {
 
   parameters {
     string(name: 'REGISTRY', defaultValue: 'docker.io', description: 'Container registry host (e.g., docker.io, ghcr.io, ecr.aws)')
-    string(name: 'NAMESPACE', defaultValue: '', description: 'Registry namespace/org (e.g., your-docker-username). Leave empty for local builds.')
+    string(name: 'NAMESPACE', defaultValue: 'VisTest', description: 'Registry namespace/org (e.g., your-docker-username). Leave empty for local builds.')
     string(name: 'FRONTEND_IMAGE', defaultValue: 'appanix-frontend', description: 'Frontend image name')
     string(name: 'BACKEND_IMAGE', defaultValue: 'appanix-backend', description: 'Backend image name')
     string(name: 'DOCKER_CREDENTIALS_ID', defaultValue: 'dockerhub-creds', description: 'Jenkins credentials ID for registry (created in Manage Credentials)')
