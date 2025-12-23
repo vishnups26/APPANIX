@@ -339,7 +339,7 @@ pipeline {
             def FRONT_TAG = "${env.REGISTRY_PREFIX}/${params.FRONTEND_IMAGE}:${env.BUILD_TAG}"
             def BACK_TAG = "${env.REGISTRY_PREFIX}/${params.BACKEND_IMAGE}:${env.BUILD_TAG}"
             
-            sh '''
+            sh """
               echo "Pushing frontend image: ${FRONT_TAG}"
               docker push ${FRONT_TAG}
               if [ $? -eq 0 ]; then
@@ -358,7 +358,7 @@ pipeline {
                 echo "✗ Failed to push backend image"
                 exit 1
               fi
-            '''
+            """
           }
         }
       }
