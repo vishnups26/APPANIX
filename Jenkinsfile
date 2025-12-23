@@ -342,7 +342,7 @@ pipeline {
             sh """
               echo "Pushing frontend image: ${FRONT_TAG}"
               docker push ${FRONT_TAG}
-              if [ $? -eq 0 ]; then
+              if [ \$? -eq 0 ]; then
                 echo "✓ Frontend image pushed successfully"
               else
                 echo "✗ Failed to push frontend image"
@@ -352,7 +352,7 @@ pipeline {
               echo ""
               echo "Pushing backend image: ${BACK_TAG}"
               docker push ${BACK_TAG}
-              if [ $? -eq 0 ]; then
+              if [ \$? -eq 0 ]; then
                 echo "✓ Backend image pushed successfully"
               else
                 echo "✗ Failed to push backend image"
