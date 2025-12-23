@@ -224,7 +224,7 @@ pipeline {
     string(name: 'NAMESPACE', defaultValue: '', description: 'Registry namespace/org (e.g., your-docker-username). Leave empty for local builds.')
     string(name: 'FRONTEND_IMAGE', defaultValue: 'appanix-frontend', description: 'Frontend image name')
     string(name: 'BACKEND_IMAGE', defaultValue: 'appanix-backend', description: 'Backend image name')
-    string(name: 'DOCKER_CREDENTIALS_ID', defaultValue: 'docker-hub-creds', description: 'Jenkins credentials ID for registry (created in Manage Credentials)')
+    string(name: 'DOCKER_CREDENTIALS_ID', defaultValue: 'dockerhub-creds', description: 'Jenkins credentials ID for registry (created in Manage Credentials)')
   }
 
   environment {
@@ -252,9 +252,32 @@ pipeline {
           echo "Docker version:"
           docker --version
           echo ""
-          echo "Node.js availability (checking node:18-alpine image):"
-          docker pull node:18-alpine --quiet || echo "Note: Node image will be pulled during build"
+          echo "Verifying Docker Hub access..."
+          # Don't try to pull here - just verify Docker works
+          # Authentication will happen before building
         '''
+      }
+    }
+
+    stage('Docker Login') {
+      steps {
+        echo '========== Authenticating to Docker Registry =========='
+        withCredentials([usernamePassword(
+          credentialsId: params.DOCKER_CREDENTIALS_ID,
+          passwordVariable: 'DOCKER_PASSWORD',
+          usernameVariable: 'DOCKER_USERNAME'
+        )]) {
+          sh '''
+            echo "Logging in to Docker Hub..."
+            echo ${DOCKER_PASSWORD} | docker login -u ${DOCKER_USERNAME} --password-stdin
+            if [ $? -eq 0 ]; then
+              echo "✓ Docker authentication successful"
+            else
+              echo "✗ Docker authentication failed"
+              exit 1
+            fi
+          '''
+        }
       }
     }
 
@@ -311,37 +334,31 @@ pipeline {
             echo "Local images created: ${env.REGISTRY_PREFIX}/${params.FRONTEND_IMAGE}:${env.BUILD_TAG}"
             echo "Local images created: ${env.REGISTRY_PREFIX}/${params.BACKEND_IMAGE}:${env.BUILD_TAG}"
           } else {
-            echo "Authenticating to Docker registry: ${params.REGISTRY}"
+            echo "Pushing images to Docker registry..."
             
-            withCredentials([usernamePassword(
-              credentialsId: params.DOCKER_CREDENTIALS_ID,
-              passwordVariable: 'REG_PWD',
-              usernameVariable: 'REG_USER'
-            )]) {
-              sh '''
-                echo "Logging in to ${REGISTRY}..."
-                echo ${REG_PWD} | docker login -u ${REG_USER} --password-stdin ${REGISTRY}
-                
-                if [ $? -eq 0 ]; then
-                  echo "✓ Docker registry login successful"
-                else
-                  echo "✗ Docker registry login failed"
-                  exit 1
-                fi
-              '''
-              
-              FRONT_TAG = "${env.REGISTRY_PREFIX}/${params.FRONTEND_IMAGE}:${env.BUILD_TAG}"
-              BACK_TAG = "${env.REGISTRY_PREFIX}/${params.BACKEND_IMAGE}:${env.BUILD_TAG}"
-              
+            FRONT_TAG = "${env.REGISTRY_PREFIX}/${params.FRONTEND_IMAGE}:${env.BUILD_TAG}"
+            BACK_TAG = "${env.REGISTRY_PREFIX}/${params.BACKEND_IMAGE}:${env.BUILD_TAG}"
+            
+            sh '''
               echo "Pushing frontend image: ${FRONT_TAG}"
-              sh "docker push ${FRONT_TAG}"
-              echo "✓ Frontend image pushed successfully"
+              docker push ${FRONT_TAG}
+              if [ $? -eq 0 ]; then
+                echo "✓ Frontend image pushed successfully"
+              else
+                echo "✗ Failed to push frontend image"
+                exit 1
+              fi
               
               echo ""
               echo "Pushing backend image: ${BACK_TAG}"
-              sh "docker push ${BACK_TAG}"
-              echo "✓ Backend image pushed successfully"
-            }
+              docker push ${BACK_TAG}
+              if [ $? -eq 0 ]; then
+                echo "✓ Backend image pushed successfully"
+              else
+                echo "✗ Failed to push backend image"
+                exit 1
+              fi
+            '''
           }
         }
       }
