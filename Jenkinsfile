@@ -292,7 +292,7 @@ pipeline {
             -v "$PWD":/app \
             -w /app \
             node:22-alpine \
-            sh -c "npm install && npm run build -configuration production || npm run build"
+            sh -c "npm install && npm run build --configuration production || npm run build"
           
           echo "✓ Frontend build completed"
           echo "Build output location: dist/"
