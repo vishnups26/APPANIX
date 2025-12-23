@@ -124,7 +124,7 @@
      - SCM: Git
      - Repository URL: https://github.com/vishnups26/APPANIX.git
      - Credentials: (leave empty for public repo, or add GitHub token)
-     - Branch Specifier: */main
+     - Branch Specifier: main
      - Script Path: Jenkinsfile
   5. Save
   
