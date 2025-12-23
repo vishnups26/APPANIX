@@ -286,6 +286,7 @@ pipeline {
         echo '========== Building Angular Frontend =========='
         sh '''
           cd inventory_management_frontend-main
+          pwd
           
           echo "Running npm install and build..."
           docker run --rm \
